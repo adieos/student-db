@@ -12,11 +12,12 @@ import (
 func main() {
 	server := gin.Default()
 
-	var db *gorm.DB = config.SetUpDatabase(&model.Major{}, &model.Student{}) // CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+	var db *gorm.DB = config.SetUpDatabase(&model.Major{}, &model.Student{})
+	var address string = config.SetAddress()
 
-	if err := server.Run(":8080"); err != nil {
+	if err := server.Run(address); err != nil {
 		log.Fatalf("Error running server: %v", err)
 	}
 
-	log.Printf("server is running %v", db)
+	log.Printf("server is running %v", db) // JUST so golang thinks db is used lol !!!!!!!!!!!
 }

@@ -24,6 +24,7 @@ func SetUpDatabase(models ...interface{}) *gorm.DB {
 		log.Fatalf("Error loading environment variables: %v", err)
 	}
 
+	// set up db credentials
 	config := dbconfig{
 		host:    os.Getenv("DB_HOST"),
 		port:    os.Getenv("DB_PORT"),
@@ -33,12 +34,19 @@ func SetUpDatabase(models ...interface{}) *gorm.DB {
 		sslmode: os.Getenv("DB_SSLMODE"),
 	}
 
+	// run db
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v",
 		config.host, config.user, config.pass, config.dbname, config.port, config.sslmode)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
+	}
+
+	// extension(s) necessary
+	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+	if err != nil {
+		log.Fatalf("Error creating extension: %v", err)
 	}
 
 	for _, model := range models {
